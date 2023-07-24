@@ -113,11 +113,7 @@ def main_meta_finetune(batch_size, lr, train_epoch, config_path, model_path, sav
     #    df_val=df_val.cuda()
     #    df_test=df_test.cuda()
 
-    if prediction_label == 'PMV':
-        training_set = Data_Encoder_Seq(df_train.index.values, df_train.Label.values, df_train)
-        validation_set = Data_Encoder_Seq(df_val.index.values, df_val.Label.values, df_val)
-        testing_set = Data_Encoder_Seq(df_test.index.values, df_test.Label.values, df_test)
-    elif prediction_label == 'Mortality':
+    if prediction_label == 'Mortality':
         training_set = Data_Encoder_Seq(df_train.index.values, df_train.DEATH_90.values, df_train)
         validation_set = Data_Encoder_Seq(df_val.index.values, df_val.DEATH_90.values, df_val)
         testing_set = Data_Encoder_Seq(df_test.index.values, df_test.DEATH_90.values, df_test)
@@ -254,11 +250,7 @@ def meta_finetune_embed(config_path, model_path, dataFolder, prediction_label, s
     df_val = pd.read_csv(dataFolder + '/val.csv')
     df_test = pd.read_csv(dataFolder + '/test.csv')
 
-    if prediction_label == 'PMV':
-        training_set = Data_Encoder_Seq(df_train.index.values, df_train.Label.values, df_train)
-        validation_set = Data_Encoder_Seq(df_val.index.values, df_val.Label.values, df_val)
-        testing_set = Data_Encoder_Seq(df_test.index.values, df_test.Label.values, df_test)
-    elif prediction_label == 'Mortality':
+    if prediction_label == 'Mortality':
         training_set = Data_Encoder_Seq(df_train.index.values, df_train.DEATH_90.values, df_train)
         validation_set = Data_Encoder_Seq(df_val.index.values, df_val.DEATH_90.values, df_val)
         testing_set = Data_Encoder_Seq(df_test.index.values, df_test.DEATH_90.values, df_test)
@@ -439,21 +431,7 @@ def main_finetune(lr, batch_size, train_epoch, dataFolder, prediction_label):
     df_val = doc_emb_to_df(doc_val, df_val)
     df_test = doc_emb_to_df(doc_test, df_test)
 
-    if prediction_label == 'PMV':
-        train_unique = df_train[['HADM_ID', 'Label']].drop_duplicates().reset_index(drop=True)
-        val_unique = df_val[['HADM_ID', 'Label']].drop_duplicates().reset_index(drop=True)
-        test_unique = df_test[['HADM_ID', 'Label']].drop_duplicates().reset_index(drop=True)
-
-        training_set = Data_Encoder_FAST(train_unique.HADM_ID.values, train_unique.Label.values, df_train)
-        training_generator = data.DataLoader(training_set, **params)
-        #print("type(training_generator):", type(training_generator))
-        validation_set = Data_Encoder_FAST(val_unique.HADM_ID.values, val_unique.Label.values, df_val)
-        validation_generator = data.DataLoader(validation_set, **params)
-
-        testing_set = Data_Encoder_FAST(test_unique.HADM_ID.values, test_unique.Label.values, df_test)
-        testing_generator = data.DataLoader(testing_set, **params)
-
-    elif prediction_label == 'Mortality':
+    if prediction_label == 'Mortality':
         train_unique = df_train[['HADM_ID', 'DEATH_90']].drop_duplicates().reset_index(drop=True)
         val_unique = df_val[['HADM_ID', 'DEATH_90']].drop_duplicates().reset_index(drop=True)
         test_unique = df_test[['HADM_ID', 'DEATH_90']].drop_duplicates().reset_index(drop=True)
@@ -570,7 +548,7 @@ def main():
                         default=None,
                         type=str,
                         required=True,
-                        help="Mortality or PMV.")
+                        help="Mortality")
     parser.add_argument("--Batch_Size_Meta",
                         default=32,
                         type=int,
@@ -602,7 +580,7 @@ def main():
     parser.add_argument("--skip_meta_finetuned",
                         default=True,
                         action='store_true',
-                        help="If you want to load the model path provided for PMV or Death Prediction.")
+                        help="If you want to load the model path provided for Death Prediction.")
     parser.add_argument("--skip_note_embed_save",
                         default=True,
                         action='store_true',
